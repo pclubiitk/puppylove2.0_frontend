@@ -27,31 +27,32 @@ export function Set_Submit(submit: boolean) {
 }
 
 // Send Heart
-interface Heart {
+export interface Heart {
     enc: string;
     sha: string;
     id_encrypt: string;
 }
   
-interface Hearts {
+export interface Hearts {
     heart1: Heart;
     heart2: Heart;
     heart3: Heart;
     heart4: Heart;
 }
 
-export async function Set_Data(data: string) {
+export let Sent_Hearts: Hearts;
+
+export async function Set_Data(data: string, id: string) {
     if(data === "FIRST_LOGIN") {
         return
     }
 
-    const Data = JSON.parse(data) as Hearts;
+    Sent_Hearts = JSON.parse(data) as Hearts;
 
     const idEncrypts: string[] = []
-    idEncrypts.push(Data.heart1.id_encrypt)
-    idEncrypts.push(Data.heart2.id_encrypt)
-    idEncrypts.push(Data.heart3.id_encrypt)
-    idEncrypts.push(Data.heart4.id_encrypt)
+    for(const key in Sent_Hearts) {
+        idEncrypts.push(Sent_Hearts[key as keyof Hearts].id_encrypt);
+    }
 
     for(let i=0; i < 4; i++) {
         const id: string = await Decryption(idEncrypts[i], PrivK)
@@ -59,8 +60,14 @@ export async function Set_Data(data: string) {
             return
         }
         const parts = id.split("+")
-        receiverIds.push(parts[0])
-        console.log(parts[0])
+        if(parts[0] === id) {
+            receiverIds.push(parts[0])
+            console.log(parts[0])
+        }
+        else {
+            receiverIds.push(parts[1])
+            console.log(parts[1])
+        }
     }
 }
 
