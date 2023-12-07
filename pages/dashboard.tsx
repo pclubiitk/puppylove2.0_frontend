@@ -1,5 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { Button } from "@chakra-ui/react";
+import { FaSignOutAlt } from "react-icons/fa";
 import "../styles/dashboard.css"
 import Image from "next/image";
 import { BsSearch } from "react-icons/bs";
@@ -9,8 +11,12 @@ import ClickedStudent from "@/components/clickedstudent";
 import "../app/globals.css";
 import GoToTop from '@/components/GoToTop';
 import { useRouter } from 'next/router';
-import Clear from '@/components/clear';import { SendHeart } from '@/utils/API_Calls/Send_Heart';
+import Clear from '@/components/clear';
+import { SendHeart } from '@/utils/API_Calls/Send_Heart';
 import {receiverIds} from '../utils/UserData';
+import { handle_Logout } from '@/utils/API_Calls/login_api';
+import { Id } from "../utils/UserData"
+const SERVER_IP = process.env.SERVER_IP
 
 interface Student {
     _id: string;
@@ -31,6 +37,7 @@ const New = () => {
     const [access_token, setAccessToken] = useState<string | null>(null);
     const [clickedStudents, setClickedStudents] = useState<Student[]>([]);
     const [user, setUser] = useState(null);
+    const [activeUsers, setActiveUsers] = useState<string[]>([]);
 
     const handleButtonClick = (studentRoll: string) => {
         if (clickedStudents.length >= 4) {
@@ -50,33 +57,95 @@ const New = () => {
         const updatedStudents = clickedStudents.filter((s) => s.i !== studentRoll);
         setClickedStudents(updatedStudents);
     };
-
+    
     const Handle_SendHeart = async () => {
-        await SendHeart_api(false)
-      }
-    
-      const Handle_SubmitHeart = async () => {
         await SendHeart_api(true)
-      }
-    
-      const SendHeart_api = async (Submit: boolean) => {
-        if(!Submit) {
-          for(let i=0; i <4; i++) {
-            const id: string = clickedStudents[i].i
-            receiverIds[i] = id
-          }
+    }
+
+    const SendHeart_api = async (Submit: boolean) => {
+        console.log(clickedStudents)
+        for(let j=0; j < clickedStudents.length; j++) {
+            const id: string = clickedStudents[j].i
+            receiverIds[j] = id
         }
-        const query = new URLSearchParams(window.location.search);
-        const id = query.get("id")
-        const isValid = await SendHeart(id as string, receiverIds, Submit)
-        if(isValid) {
-          // ALERT HEART SENT
-          console.log("HEARTS SEND")
+        for(let j = clickedStudents.length; j < 4; j++) {
+            receiverIds[j] = ''
+        }
+        const isValid = await SendHeart(Id, receiverIds, Submit)
+        if(isValid && Submit) {
+            alert('HEARTS SENT')
+            console.log("HEARTS SEND")
+        }
+        else if(isValid && Submit) {
+            alert('Error Occurred , Hearts not sent')
+            console.log("Error")
+        }
+      }
+
+    const Logout = async () => {
+
+        console.log(clickedStudents)
+
+        await SendHeart_api(false);
+        const isValid = await handle_Logout()
+        router.push('/')
+        if(!isValid) {
+            alert('Some Error Occured while Logging Out')
         }
         else {
-          console.log("Error")
+            console.log('Logged Out')
         }
-      }
+    }
+
+    const fetchAndSelectStudents = async () => {
+        const selected: Student[] = []
+        for(let i=0; i < 4; i++) {
+            const id = receiverIds[i]
+            if(id === '') {
+                continue
+            }
+            const data = await fetchData(id);
+            const student = data[0];
+            if (student) {
+                selected.push(student);
+            }
+        }
+        setClickedStudents(selected)
+    }
+
+    useEffect(() => {
+        if(access_token) {
+            fetchAndSelectStudents();
+        }
+    }, [access_token]);
+
+    useEffect(() => {
+        const fetchActiveUsers = async () => {
+            try {
+                const res = await fetch(
+                    `${SERVER_IP}/users/activeusers`, {
+                        method: "GET",
+                        credentials: "include" // uncomment this line if server running on same host as frontend (CORS)
+                    }
+                )
+                if (!res.ok) {
+                    throw new Error(`HTTP Error: ${res.status} - ${res.statusText}`);
+                }
+                const active = await res.json()
+                setActiveUsers(active.users)
+            }
+            catch(err) {
+                // Cannot fetch Active users
+                console.log(err)
+            }
+        }
+
+        fetchActiveUsers()
+    }, []);
+
+    const isActive = (id: string) => {
+        return activeUsers.includes(id);
+    };
 
     useEffect(() => {
         if (!access_token) {
@@ -146,7 +215,6 @@ const New = () => {
                     limit: 20,
                 }),
             });
-
             const response = await student_data.json();
             return response.documents;
         } catch (error) {
@@ -156,16 +224,18 @@ const New = () => {
     };
     const FetchUser = async (id: string) => {
         const user = await fetchData(id);
+        console.log(user)
         setUser(user[0]);
     }
     useEffect(() => {
-
-
-        const { id } = router.query;
-        const userId = id?.toString();
-        FetchUser(userId);
+        if(Id === '') {
+            router.push('/login')
+        }
+        if(access_token) {
+            FetchUser(Id)
+        }
         //Change it
-    }, [router, FetchUser]);
+    }, [access_token]);
 
     useEffect(() => {
         fetchStudents();
@@ -188,6 +258,11 @@ const New = () => {
     return (
         <>
             <Clear />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button as="a" className="chakra-button css-q9srah" onClick={Logout} leftIcon={<FaSignOutAlt />} style={{ top: '10px', left: '1310px' }}>
+                Logout
+            </Button>
+            </div>
             <div className='new'>
                 <div className='section_1'>
                     <div className="section-1">
@@ -205,11 +280,7 @@ const New = () => {
                                 <p className="details-text">{user?.n}</p>
                                 <p className="details-text">{user?.d}</p>
                                 <p className="details-text">{user?.i}</p>
-                                <p>{receiverIds[0]}</p>
-                                <p>{receiverIds[1]}</p>
-                                <p>{receiverIds[2]}</p>
-                                <p>{receiverIds[3]}</p>
-                                <button onClick={Handle_SubmitHeart}>SUBMIT HEARTS</button>
+                                <button onClick={Handle_SendHeart}>SEND HEARTS</button>
                             </div>}
 
                         </div>
@@ -222,7 +293,6 @@ const New = () => {
                         :
                         <h2>Clicked Students :</h2>
                     }
-                    <button onClick={Handle_SendHeart}>SEND HEART</button>
                 </div>
 
 
@@ -240,14 +310,13 @@ const New = () => {
                 </div>
                 <div className="student-container">
                     {filteredStudents.map((student) => (
-                        <Card key={student._id} student={student} onClick={handleButtonClick} clickedCheck={clickedStudents.includes(student)} />
+                        <Card key={student._id} student={student} onClick={handleButtonClick} clickedCheck={clickedStudents.includes(student)} isActive={isActive}/>
                     ))}
                 </div>
                 <GoToTop />
             </div>
             <Clear />
         </>
-
     )
 }
 
