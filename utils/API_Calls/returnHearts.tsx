@@ -8,6 +8,9 @@ export const returnHearts = async() => {
     for(let i=0; i < Claims.length; i++) {
         const sha = Claims[i].sha
         for(let j=0; j < 4; j++) {
+            if(receiverIds[j] === '') {
+                continue
+            }
             const enc = await Encryption(sha, pubKeys[j])
             ReturnHearts.push({enc: enc, sha: sha})
         }
@@ -15,13 +18,16 @@ export const returnHearts = async() => {
 }
 
 export const returnHearts_Late = async() => {
-    if(Claims.length === 0) {
+    if(Claims_Late.length === 0) {
         return
     }
     console.log(Claims_Late);
     for(let i=0; i < Claims_Late.length; i++) {
         const sha = Claims_Late[i].sha
         for(let j=0; j < 4; j++) {
+            if(receiverIds[j] === '') {
+                continue;
+            }
             const pubKey = await get_pubKey(receiverIds[j])
             const enc = await Encryption(sha, pubKey)
             ReturnHearts_Late.push({enc: enc, sha: sha})

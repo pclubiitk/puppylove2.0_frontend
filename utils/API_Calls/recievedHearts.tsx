@@ -1,4 +1,3 @@
-import { encode } from 'punycode';
 import { Decryption } from '../Encryption'; 
 import { PrivK, Set_heartsMale, Set_heartsFemale, Claims, Submit , Claims_Late} from "../UserData"
 const SERVER_IP = process.env.SERVER_IP
@@ -6,7 +5,7 @@ const SERVER_IP = process.env.SERVER_IP
 export const fetchAndDecodeHearts = async () => {
   const res = await fetch(`${SERVER_IP}/users/fetchall`, {
     method: "GET",
-    // credentials: "include"  // uncomment this line if server running on same host as frontend (CORS)
+    credentials: "include"  // uncomment this line if server running on same host as frontend (CORS)
   });
   if (!res.ok) {
     throw new Error(`HTTP Error: ${res.status} - ${res.statusText}`);
@@ -49,7 +48,7 @@ export const fetchAndDecodeHearts = async () => {
 const ClaimHeart = async (enc: string, sha: string, gender: string) => {
     const res = await fetch(`${SERVER_IP}/users/claimheart`, {
     method: "POST",
-    // credentials: "include",  // uncomment this line if server running on same host as frontend (CORS)
+    credentials: "include",  // uncomment this line if server running on same host as frontend (CORS)
     body: JSON.stringify({
       enc: enc,
       sha: sha,

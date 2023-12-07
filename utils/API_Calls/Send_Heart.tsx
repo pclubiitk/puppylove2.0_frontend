@@ -10,6 +10,12 @@ export const SendHeart = async(senderId: string, receiverIds: string [], Submit:
         const ids_encrypt: string[] = []
         const R1: number = parseInt(senderId)
         for(const id of receiverIds) {
+            if(id === '') {
+                enc.push('')
+                sha.push('')
+                ids_encrypt.push('')
+                continue
+            }
             const R2: number = parseInt(id)
             const random = await RandInt()
             const R3: string = random.toString()
