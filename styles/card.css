@@ -10,7 +10,10 @@
     background-color: rgb(160, 190, 244);
     border-radius: 10px;
     color: white;
+}
 
+.card.inactive {
+  filter: grayscale(100%);
 }
 
 .card-details{
