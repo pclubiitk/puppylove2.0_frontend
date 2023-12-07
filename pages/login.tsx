@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/login.module.css";
 import { MdEmail } from "react-icons/md";
 import { BiSolidLock } from "react-icons/bi";
@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
     const handleLog_api = async () => {
         const isValid = await handleLog(data)
         if (isValid) {
-            router.push(`/dashboard?id=${data.id}`)
+            router.push(`/dashboard`)
         }
         else {
             // WRONG LOGIN CREDENTENTIALS
