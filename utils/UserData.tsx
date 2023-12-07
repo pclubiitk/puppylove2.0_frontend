@@ -1,14 +1,20 @@
 import { Decryption } from "./Encryption"
 
-export let Gender = ""
-export let PubK = ""
-export let PrivK = ""
-export let Data = ""
+
+export let Id = ''
+export let Gender = ''
+export let PubK = ''
+export let PrivK = ''
+export let Data = ''
 export let Submit = false
 // IDs of receivers of heart from User
 export let receiverIds: string[] = []
 
 export let pubKeys: string[] = []
+
+export function Set_Id(id: string) {
+    Id = id
+}
 
 export function Set_Gender(gender: string) {
     Gender = gender
@@ -44,6 +50,9 @@ export let Sent_Hearts: Hearts;
 
 export async function Set_Data(data: string, id: string) {
     if(data === "FIRST_LOGIN") {
+        for(let i=0; i < 4; i++) {
+            receiverIds[i] = ''
+        }
         return
     }
 
@@ -55,18 +64,21 @@ export async function Set_Data(data: string, id: string) {
     }
 
     for(let i=0; i < 4; i++) {
+        if(idEncrypts[i] === '') {
+            receiverIds[i] = ''
+            continue
+        }
         const id: string = await Decryption(idEncrypts[i], PrivK)
         if(id === null){
             return
         }
-        const parts = id.split("+")
-        if(parts[0] === id) {
-            receiverIds.push(parts[0])
-            console.log(parts[0])
+        if(id.slice(0,6) === Id) {
+            receiverIds[i] = (id.slice(6,12))
+            console.log(id.slice(6,12))
         }
         else {
-            receiverIds.push(parts[1])
-            console.log(parts[1])
+            receiverIds[i] = (id.slice(0,6))
+            console.log(id.slice(0,6))
         }
     }
 }
@@ -102,6 +114,9 @@ export let Claims: heart[] = []
 export let Claims_Late : ReturnHeart[] = []
 
 export async function Set_Claims(claims: string) {
+    heartsReceivedFromFemales = 0;
+    heartsReceivedFromMales = 0;
+    
     if (claims === "") {
         return
     }
