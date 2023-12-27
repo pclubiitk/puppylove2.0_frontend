@@ -10,29 +10,8 @@ import Results from "@/components/matchedResults";
 import Link from "next/link";
 import { search_students, Student } from "@/utils/API_Calls/search";
 import { get_result } from "@/utils/API_Calls/get_results";
-import { useRouter } from "next/router"
-import styles from "../styles/login.module.css";
-
-
 
 const ResultPage = () => {
-
-    useEffect(() => {
-        const show_result = async() => {
-            await get_result();
-            for(let j=0; j < Matched_Ids.length; j++) {
-                const data: Array<Student> = search_students(Matched_Ids[j]);
-                if(!data.length) {
-                    return;
-                }
-                const student = data[0];
-                setMatches(student)
-            }
-        }
-        show_result();
-    }, [])
-    
-    const router = useRouter()
 
     const stylesss = {
         backgroundImage: `url("https://home.iitk.ac.in/~${user?.u}/dp"), url("https://oa.cc.iitk.ac.in/Oa/Jsp/Photo/${user?.i}_0.jpg"), url("/dummy.png")`,
@@ -51,7 +30,7 @@ const ResultPage = () => {
                             </div>
                             {user && <div className="detail">
                                 <div className="details-text-name">{user?.n}</div>
-                                {/* <div className="details-text" >{user?.d}</div> */}
+                                <div className="details-text" >{user?.d}</div>
                                 <div className="details-text" >{user?.i}</div>
                             </div>}
 
@@ -74,16 +53,7 @@ const ResultPage = () => {
                     <h1>Results Yet to be Published</h1>
                 </div>
                 }
-            <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className={styles["login-submit-button"]}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => router.push(`/dashboard`)}
-                    style={{ color: "black" }}
-                >
-                    Back
-            </motion.div>
-                
+                <Link href="/dashboard"  style={{ color: "white" , fontSize : "20px"}}>Back</Link>
             </div>
             </div>
             <Clear />

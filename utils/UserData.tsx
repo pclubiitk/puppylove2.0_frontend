@@ -9,15 +9,18 @@ export let Data = ''
 export let Submit = false
 // IDs of receivers of heart from User
 export let receiverIds: string[] = []
-export let Matched_Ids: string[] = []
+export let Matched_Ids: string[] = ['220950', '220120']
 export let Matches: Student[] = []
-export let admin_pulished : boolean = false;
-export let user : Student = {} as Student;
+export let admin_pulished : boolean = true;
+export let user = ""
 
-export const setMatches = ( student_matched : any) => {
-    Matches.push(student_matched);
+export const setMatches = (student_matched: any) => {
+    if (!Matches.includes(student_matched)) {
+        Matches.push(student_matched);
+    }
 };
-export const setUser = ( student_user : Student) => {
+
+export const setUser = ( student_user : any) => {
     user = student_user;
 };
 
