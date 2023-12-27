@@ -80,7 +80,7 @@
     grid-area: section_3r;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     background-color: white;
     border-radius: 10px;

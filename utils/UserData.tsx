@@ -9,7 +9,7 @@ export let Data = ''
 export let Submit = false
 // IDs of receivers of heart from User
 export let receiverIds: string[] = []
-export let Matched_Ids: string[] = ['220950', '220120']
+export let Matched_Ids: string[] = []
 export let Matches: Student[] = []
 export let admin_pulished : boolean = true;
 export let user = ""

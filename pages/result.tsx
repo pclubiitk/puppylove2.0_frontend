@@ -5,13 +5,22 @@ import "../styles/result-page.css";
 import Clear from "@/components/clear";
 import Hearts from "@/components/Hearts";
 import { motion } from "framer-motion";
-import { admin_pulished, Matched_Ids, setMatches, user } from "@/utils/UserData";
+import { admin_pulished, Id, Matched_Ids, setMatches, user } from "@/utils/UserData";
 import Results from "@/components/matchedResults";
 import Link from "next/link";
 import { search_students, Student } from "@/utils/API_Calls/search";
 import { get_result } from "@/utils/API_Calls/get_results";
+import { useRouter } from 'next/router';
 
 const ResultPage = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        
+        if (Id === '') {
+          router.push('/login');
+        }
+    }, [])
 
     const stylesss = {
         backgroundImage: `url("https://home.iitk.ac.in/~${user?.u}/dp"), url("https://oa.cc.iitk.ac.in/Oa/Jsp/Photo/${user?.i}_0.jpg"), url("/dummy.png")`,

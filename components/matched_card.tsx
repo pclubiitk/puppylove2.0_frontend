@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/card.css";
+import "../styles/result-card.css";
 
 const MatchedCard = ({ student }: any) => {
   const userName = student.u;
@@ -11,12 +11,12 @@ const MatchedCard = ({ student }: any) => {
 
 
   return (
-    <div className= "card">
-      <div className="image-box">
-        <div className="profile" style={stylesss}></div>
+    <div className= "cardr">
+      <div className="image-boxr">
+        <div className="profiler" style={stylesss}></div>
       </div>
-      <p className="card-details">{student.n}</p>
-      <p className="card-details">{student.i}</p>
+      <p className="card-detailsr">{student.n}</p>
+      <p className="card-detailsr">{student.i}</p>
     </div>
   );
 };
