@@ -21,7 +21,9 @@ async function fetchPubKeys() {
 export const SendHeart = async (
   senderId: string,
   receiverIds: string[],
-  Submit: boolean
+  selectedSongs: { [key: string]: string | null },
+ 
+  Submit: boolean,
 ) => {
   try {
     if (!isPubliKAvail) {
@@ -32,12 +34,14 @@ export const SendHeart = async (
     const sha: string[] = [];
     const sha_encrypt: string[] = [];
     const ids_encrypt: string[] = [];
+    const song_encrypt: string[] = [];
     const R1: number = parseInt(senderId);
     for (const id of receiverIds) {
       if (id === '') {
         enc.push('');
         sha.push('');
         ids_encrypt.push('');
+        song_encrypt.push('');
         continue;
       }
       const R2: number = parseInt(id);
@@ -48,6 +52,7 @@ export const SendHeart = async (
       if (R1 < R2) {
         const id_plain: string = R1.toString() + '-' + R2.toString() + '-' + R3;
         id_encrypt = await Encryption(id_plain, PubK);
+      
         const sha_: string = await SHA256(id_plain);
         sha.push(sha_);
         const sha_encrypt_: string = await Encryption_AES(sha_, PrivK);
@@ -65,6 +70,17 @@ export const SendHeart = async (
         enc.push(enc_);
       }
       ids_encrypt.push(id_encrypt);
+     // Encrypt song ID
+     const songId = selectedSongs[id] || '';
+     if (songId) {
+       const song_plain: string = `${R1}-${R2}-${songId}-${R3}`;
+       
+       const song_enc: string = await Encryption(song_plain, PubK);
+       song_encrypt.push(song_enc);
+     } else {
+       song_encrypt.push(''); 
+     }
+     
     }
     const res = await fetch(`${SERVER_IP}/users/sendheartVirtual`, {
       method: 'POST',
@@ -75,21 +91,25 @@ export const SendHeart = async (
             enc: enc[0],
             sha_encrypt: sha_encrypt[0],
             id_encrypt: ids_encrypt[0],
+            song_id: song_encrypt[0],
           },
           heart2: {
             enc: enc[1],
             sha_encrypt: sha_encrypt[1],
             id_encrypt: ids_encrypt[1],
+            song_id: song_encrypt[1],
           },
           heart3: {
             enc: enc[2],
             sha_encrypt: sha_encrypt[2],
             id_encrypt: ids_encrypt[2],
+            song_id: song_encrypt[2],
           },
           heart4: {
             enc: enc[3],
             sha_encrypt: sha_encrypt[3],
             id_encrypt: ids_encrypt[3],
+            song_id: song_encrypt[3],
           },
         },
       }),

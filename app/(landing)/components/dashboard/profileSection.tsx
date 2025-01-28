@@ -1,6 +1,6 @@
 import { Stack, VStack, Box, useToast, Button, ring } from '@chakra-ui/react';
 import styles from '@/styles/dashboard.module.css';
-import { FaHeart, FaRandom } from 'react-icons/fa';
+import { FaHeart, FaRandom, FaSpotify } from 'react-icons/fa';
 import { BiLogOut } from 'react-icons/bi';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -25,6 +25,7 @@ import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import SetRecoveryToast from './recoveryToast';
 import IntrestChips from '@/components/intrestChips';
 import { About, setAbout } from '@/utils/UserData';
+import { handleAuthorization } from '@/utils/API_Calls/spotify_Auth';
 interface profile {
   user: Student;
   submit: Function;
@@ -54,12 +55,29 @@ const ProfileSection: React.FC<profile> = ({ user, submit, submitted }) => {
   const router = useRouter();
   const toast = useToast();
   const [userAbout, setUserAbout] = useState('');
-
+  const [isAuthorized, setIsAuthorized] = useState(false);
   useEffect(() => {
     console.log(About);
     setUserAbout(About.length ? About : 'Tell us more about you!!');
   }, [About]);
-
+  const clientId = process.env.CLIENT_ID;
+  const redirectUri = 'http://localhost:3000/dashboard';
+  const scope = '';  
+  useEffect(() => {
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      setIsAuthorized(true);
+    }
+  }, []);
+  const handleAuthorizationClick = () => {
+    handleAuthorization(clientId!, scope, redirectUri);
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      setIsAuthorized(true); 
+    } else {
+      console.error('Access token not found in local storage.');
+    }
+  };
   const Logout = async () => {
     // console.log(clickedStudents)
     // await SendHeart_api(false); // why?
@@ -215,6 +233,7 @@ const ProfileSection: React.FC<profile> = ({ user, submit, submitted }) => {
                   textAlign={'right'}
                   as={EditableInput}
                 />
+               
                 <EditableControls />
               </div>
             </Editable>
@@ -232,6 +251,35 @@ const ProfileSection: React.FC<profile> = ({ user, submit, submitted }) => {
         className="action-section"
         justifyContent={{ base: 'right', md: 'center' }}
       >
+      <Button
+                            onClick={handleAuthorizationClick}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor:"#1DB954", 
+                              color: "white",
+                              border: "none",
+                              borderRadius: "5px",
+                              padding: "10px 15px",
+                              fontSize: "16px",
+                              cursor: "pointer",
+                              transition: "background-color 0.3s",
+                              boxShadow: isAuthorized
+                                ? "0px 4px 10px rgba(0, 0, 0, 0.2)"
+                                : "0px 2px 5px rgba(0, 0, 0, 0.1)",
+                            }}
+                          >
+                            {!isAuthorized ? (
+                              <>
+                                <FaSpotify style={{ marginRight: "8px" }} />Connect Spotify
+                              </>
+                            ) : (
+                              <>
+                                <FaSpotify style={{ marginRight: "8px" }} />Connected
+                              </>
+                            )}
+      </Button>
         <ActionButton
           text={submitted ? 'Submitted' : 'Submit Hearts'}
           icon={<FaHeart />}

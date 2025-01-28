@@ -15,6 +15,8 @@ interface mainSection {
   hearts_submitted: boolean;
   set_hearts_submitted: Function;
   SendHeart_api: Function;
+  selectedSongIds: { [key: string]: string | null };
+  setSelectedSongIds: Function;
 }
 
 const MainSection: React.FC<mainSection> = ({
@@ -23,12 +25,13 @@ const MainSection: React.FC<mainSection> = ({
   hearts_submitted,
   set_hearts_submitted,
   SendHeart_api,
+  selectedSongIds,
+  setSelectedSongIds,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const toast = useToast();
 
   useEffect(() => {
@@ -88,7 +91,7 @@ const MainSection: React.FC<mainSection> = ({
     };
 
     if (clickedStudents.length >= 0) updateVirtualHeart();
-  }, [clickedStudents]);
+  }, [clickedStudents,selectedSongIds]);
 
   // Fetch all active users
   useEffect(() => {
@@ -112,6 +115,13 @@ const MainSection: React.FC<mainSection> = ({
     fetchActiveUsers();
   }, []);
 
+  const handleSongSelect = (studentId: string, songId: string | null) => {
+    setSelectedSongIds((prev: any) => ({
+      ...prev,
+      [studentId]: songId,
+    }));
+  };
+
   const isActive = (id: string) => {
     return activeUsers.includes(id);
   };
@@ -125,7 +135,9 @@ const MainSection: React.FC<mainSection> = ({
       <LockAndHeart
         hearts_submitted={Submit}
         clickedStudents={clickedStudents}
-        setClickedStudents={setClickedStudents}
+        setClickedStudents={setClickedStudents} 
+        selectedSongIds={selectedSongIds}   
+        setSelectedSongIds={setSelectedSongIds}     
       />
       <Box className={styles.bottomMiddleSection}>
         <Box className={styles.searchDiv}>
@@ -139,17 +151,6 @@ const MainSection: React.FC<mainSection> = ({
           />
         </Box>
         <Box className={styles.studentContainer}>
-          {/* {students.length == 0 && (
-            <Box className={styles.emptyImageDiv}>
-              <Image
-              src={'/dashboard.jpeg'}
-              alt="Logo"
-              width={200}
-              height={200}
-              />
-            </Box>
-          )} */}
-
           {students.map(
             (student) =>
               student.i != Id && (
@@ -160,6 +161,8 @@ const MainSection: React.FC<mainSection> = ({
                   clickedCheck={clickedStudents.includes(student)}
                   isActive={isActive}
                   hearts_submitted={hearts_submitted}
+                  setSelectedSongId={(songId: string | null) => handleSongSelect(student.i, songId)}
+                  selectedSongId={selectedSongIds[student.i] || null}
                 />
               )
           )}

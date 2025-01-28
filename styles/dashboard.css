@@ -39,7 +39,7 @@
   /* background-color: aqua; */
   padding: 1rem;
   display: grid;
-  max-height: 90vh;
+max-height:95vh;
   overflow-y: auto;
   grid-template-columns: 1fr;
   grid-template-rows: 0.5fr 2fr;
@@ -80,7 +80,8 @@
   border-radius: 10px;
   padding: 6px;
   /* padding-left: 20%; */
-  overflow-x: scroll;
+ overflow-x: hidden;
+
 }
 
 .section_3 {

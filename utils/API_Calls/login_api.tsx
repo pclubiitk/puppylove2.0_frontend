@@ -25,7 +25,6 @@ export const handleLog = async (data: any, recaptchaToken: any) => {
   try {
     const myHeaders = new Headers();
     myHeaders.append('g-recaptcha-response', recaptchaToken);
-    console.log(recaptchaToken);
     const passHash = await SHA256(data.password);
     const bdy = JSON.stringify({
       _id: data.id,
