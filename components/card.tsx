@@ -1,18 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/card.css';
-// import { Box, VStack } from '@chakra-ui/react';
-import {
-  Box,
-  VStack,
-  Text,
-  IconButton,
-  HStack,
-  useColorMode,
+import {Box,VStack,Text,IconButton,HStack,useColorMode,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,ModalFooter,Button,useDisclosure,
 } from '@chakra-ui/react';
 import { FaHeart } from 'react-icons/fa';
 import { TbMusicHeart } from 'react-icons/tb';
 import { DeleteIcon } from '@chakra-ui/icons';
-
+import SongSelector from './SongSelector';
 const CustomCard = ({
   student,
   onClick,
@@ -20,14 +13,25 @@ const CustomCard = ({
   isActive,
   hearts_submitted,
   inSelectSection,
+  setSelectedSongId,
+  selectedSongId,
+
 }: any) => {
   const { colorMode } = useColorMode();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const userName = student.u;
   const roll = student.i;
 
   const stylesss = {
     backgroundImage: `url("https://home.iitk.ac.in/~${userName}/dp"), url("https://oa.cc.iitk.ac.in/Oa/Jsp/Photo/${roll}_0.jpg"), url("/dummy.png")`,
   };
+  const handleSongSelect = (SongId: string | null) => {
+    setSelectedSongId((prevState: { [key: string]: string | null }) => ({
+      ...prevState,
+      [student.i]: SongId,
+    }));
+  };
+  
 
   const isClicked = false;
 
@@ -40,6 +44,7 @@ const CustomCard = ({
     }
   };
 
+  
   return (
     <Box
       display="flex"
@@ -66,7 +71,7 @@ const CustomCard = ({
         <Text fontSize="sm" color="gray.300">
           {'About info here, Hi i love to write and read poems'}
         </Text>
-        {/* <InterestChips interests={['Music', 'Dance', 'Sports']} /> */}
+
         <HStack justify="space-between" width="100%">
           {hearts_submitted && isActive(student.i) ? (
             <Text color="green.500">Hearts Submitted</Text>
@@ -82,16 +87,21 @@ const CustomCard = ({
                   <FaHeart color="red" />
                 </IconButton>
               )}
-
+            {inSelectSection && (
               <IconButton
                 border="1px solid"
                 borderColor={colorMode === 'light' ? '#FFD700' : '#ffffff60'}
                 color={colorMode == 'light' ? 'green.500' : 'green.300'}
                 aria-label="Add to favorite with music"
-                onClick={clicked}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent other event handlers from triggering
+                  onOpen();
+                }}
               >
                 <TbMusicHeart />
               </IconButton>
+            )}
+              
               {inSelectSection && (
                 <IconButton
                   border="1px solid"
@@ -107,8 +117,49 @@ const CustomCard = ({
           ) : (
             <Text color="red.500">Not Active</Text>
           )}
+
         </HStack>
       </VStack>
+       {/* Song Selector Modal */}
+       <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent  
+    maxHeight="80vh" 
+    overflowY="auto" 
+    borderRadius="10px"
+    bg="rgba(0, 0, 0, 0.45)"
+    boxShadow="0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+    backdropFilter="blur(15.5px)"
+   
+    border="1px solid rgba(255, 255, 255, 0.18)"
+    >
+          <ModalHeader>Select a Song</ModalHeader>
+          
+          <ModalBody>
+          {selectedSongId && (
+    <Box textAlign="center" mb={4}>
+      <Text fontSize="lg" fontWeight="bold" mb={2} color="white">
+        Currently Selected
+      </Text>
+      <iframe
+        src={`https://open.spotify.com/embed/track/${selectedSongId}`}
+        width="100%"
+        height="80"
+        allow="autoplay; encrypted-media"
+        style={{
+          borderRadius: '12px',
+        }}
+      ></iframe>
+    </Box>
+  )}
+       
+            <SongSelector onConfirm={handleSongSelect} />
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

@@ -10,6 +10,7 @@ export let Submit = false;
 
 // IDs of receivers of heart from User
 export let receiverIds: string[] = [];
+export let receiverSongs: string[] = [];
 export let Matched_Ids: string[] = [];
 export let Matches: Student[] = [];
 export let admin_pulished: boolean = false;
@@ -80,6 +81,8 @@ export interface Heart {
   enc: string;
   sha_encrypt: string;
   id_encrypt: string;
+  song_id:string;
+  
 }
 
 export interface Hearts {
@@ -92,9 +95,10 @@ export interface Hearts {
 export let Sent_Hearts: Hearts;
 
 export async function Set_Data(data: string) {
-  // Initializing Every State Varibale to 0 incase user Logins again immediately after Logout
+  // Initialize state variables
   for (let i = 0; i < 4; i++) {
     receiverIds[i] = '';
+    receiverSongs[i] = '';
   }
 
   if (data === 'FIRST_LOGIN') {
@@ -102,29 +106,49 @@ export async function Set_Data(data: string) {
   }
 
   Sent_Hearts = JSON.parse(data) as Hearts;
-  // console.log(Sent_Hearts)
 
   const idEncrypts: string[] = [];
+  const songEncrypts: string[] = [];
+
   for (const key in Sent_Hearts) {
     idEncrypts.push(Sent_Hearts[key as keyof Hearts].id_encrypt);
+    songEncrypts.push(Sent_Hearts[key as keyof Hearts].song_id);
   }
 
   for (let i = 0; i < 4; i++) {
     if (idEncrypts[i] === '') {
       receiverIds[i] = '';
+      receiverSongs[i] = '';
       continue;
     }
+
+    // Decrypt the IDs
     const id: string = await Decryption(idEncrypts[i], PrivK);
-    if (id === null) {
+    if (id === null || id === 'Fail') {
       return;
     }
+
+    // Parse the decrypted ID
     let str = id.split('-');
     if (str[0] === Id) {
       receiverIds[i] = str[1];
-      // console.log(id.slice(6,12))
     } else {
       receiverIds[i] = str[0];
-      // console.log(id.slice(0,6))
+    }
+
+    // Decrypt the song IDs
+  
+    const song_enc = songEncrypts[i]; 
+    if (song_enc) {
+      const song_plain: string = await Decryption(song_enc, PrivK); 
+   
+      if (song_plain === 'Fail') {
+        receiverSongs[i] = '';
+      } else {
+        const parts = song_plain.split('-'); 
+        receiverSongs[i] = parts[2];
+        console.log(receiverSongs[i]) 
+      }
     }
   }
 }

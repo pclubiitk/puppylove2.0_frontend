@@ -11,17 +11,18 @@ interface LockAndHeartProps {
   hearts_submitted: boolean;
   clickedStudents: Student[];
   setClickedStudents: Function;
+  selectedSongIds: { [key: string]: string | null };
+  setSelectedSongIds: Function;
 }
 
 const LockAndHeart: React.FC<LockAndHeartProps> = ({
   hearts_submitted,
   clickedStudents,
   setClickedStudents,
+  selectedSongIds,
+  setSelectedSongIds,
 }) => {
   const [expandedSection, setExpandedSection] = useState<boolean>(false);
-  // const [clickedStudents, setClickedStudents] = useState<Student[]>([]);
-  // const [hearts_submitted, set_hearts_submitted] = useState(Submit);
-
   const handleUnselectStudent = async (studentRoll: string) => {
     const updatedStudents = clickedStudents.filter((s) => s.i !== studentRoll);
     console.log('updatedStudents:', updatedStudents);
@@ -42,13 +43,6 @@ const LockAndHeart: React.FC<LockAndHeartProps> = ({
           expandedSection ? styles.collapsed : styles.minWidth
         }`}
       >
-        {/* <DotLottieReact
-          className={styles.animationIcon}
-          speed={1}
-          src="/heart1.lottie"
-          loop
-          autoplay
-        /> */}
         <Hearts />
       </Box>
 
@@ -67,10 +61,11 @@ const LockAndHeart: React.FC<LockAndHeartProps> = ({
                   clickedStudents={clickedStudents}
                   onUnselectStudent={handleUnselectStudent}
                   hearts_submitted={hearts_submitted}
-                />
+                  selectedSongIds={selectedSongIds} 
+                  setSelectedSongIds={setSelectedSongIds}   />
               </Box>
             ) : (
-              <h1 style={{ margin: 'auto' }}>no one slected</h1>
+              <h1 style={{ margin: 'auto' }}>no one selected</h1>
             )}
           </Box>
         ) : (

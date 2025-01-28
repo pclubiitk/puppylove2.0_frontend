@@ -9,6 +9,8 @@
   width: 350px;
   min-width: 270px;
   height: fit-content;
+  overflow-y: hidden;
+  overflow-x:hidden;
 }
 
 .inactive {
