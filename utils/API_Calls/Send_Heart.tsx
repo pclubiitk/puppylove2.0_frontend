@@ -1,4 +1,4 @@
-import { SHA256, Encryption, RandInt, Encryption_AES, generateRandomString } from '../Encryption';
+import { SHA256, Encryption, Encryption_AES, generateRandomString } from '../Encryption';
 import { PubK, Gender, ReturnHearts, Set_Submit, PrivK } from '../UserData';
 import { returnHearts } from './returnHearts';
 const SERVER_IP = process.env.SERVER_IP;
@@ -51,10 +51,10 @@ export const SendHeart = async (
       const R3: string = random;
       const pubKey_: string = get_pubKey(id);
       let id_encrypt: string;
+      // need to imporove this code, only id_plain is different
       if (R1 < R2) {
         const id_plain: string = R1.toString() + '-' + R2.toString() + '-' + R3;
-        id_encrypt = await Encryption(id_plain, PubK);
-      
+        id_encrypt = await Encryption(id_plain, PubK); 
         const sha_: string = await SHA256(id_plain);
         sha.push(sha_);
         const sha_encrypt_: string = await Encryption_AES(sha_, PrivK);
@@ -90,25 +90,21 @@ export const SendHeart = async (
       body: JSON.stringify({
         hearts: {
           heart1: {
-            enc: enc[0],
             sha_encrypt: sha_encrypt[0],
             id_encrypt: ids_encrypt[0],
             song_id: song_encrypt[0],
           },
           heart2: {
-            enc: enc[1],
             sha_encrypt: sha_encrypt[1],
             id_encrypt: ids_encrypt[1],
             song_id: song_encrypt[1],
           },
           heart3: {
-            enc: enc[2],
             sha_encrypt: sha_encrypt[2],
             id_encrypt: ids_encrypt[2],
             song_id: song_encrypt[2],
           },
           heart4: {
-            enc: enc[3],
             sha_encrypt: sha_encrypt[3],
             id_encrypt: ids_encrypt[3],
             song_id: song_encrypt[3],

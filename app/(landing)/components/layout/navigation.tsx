@@ -27,7 +27,7 @@ const Navigation: React.FC = () => {
     }
   );
 
-  const mobileNavBtnRef = React.useRef<HTMLButtonElement>();
+  const mobileNavBtnRef = React.useRef<HTMLButtonElement>(null);
 
   useUpdateEffect(() => {
     mobileNavBtnRef.current?.focus();

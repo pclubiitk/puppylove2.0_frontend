@@ -1,16 +1,10 @@
 'use client';
-import { extendTheme, Heading } from '@chakra-ui/react';
+import { extendTheme, Heading, withDefaultColorScheme } from '@chakra-ui/react';
 import { theme } from '@saas-ui/react';
 import { mode } from '@chakra-ui/theme-tools';
 
 import components from './components';
 import { fontSizes } from './foundations/typography';
-import button from './components/button';
-import { color } from 'framer-motion';
-import Head from 'next/head';
-
-// import '@fontsource/inter/variable.css'
-
 const styles = {
   global: (props: any) => ({
     body: {
@@ -60,7 +54,7 @@ const newComponents = {
 export default extendTheme(
   {
     config: {
-      colorMode: 'dark',
+      initialColorMode: 'dark',
       useSystemColorMode: false,
     },
     styles,

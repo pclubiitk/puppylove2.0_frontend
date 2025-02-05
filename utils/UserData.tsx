@@ -1,5 +1,5 @@
 import { Student } from './API_Calls/search';
-import { Decryption, Decryption_AES } from './Encryption';
+import { Decryption} from './Encryption';
 
 export let Id = '';
 export let Gender = '';
@@ -80,7 +80,6 @@ export function Set_Submit(submit: boolean) {
 
 // Send Heart
 export interface Heart {
-  enc: string;
   sha_encrypt: string;
   id_encrypt: string;
   song_id:string;

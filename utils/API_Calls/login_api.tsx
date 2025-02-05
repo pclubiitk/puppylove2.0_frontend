@@ -98,7 +98,6 @@ export const fetchUserData = async () => {
     Set_Submit(res_json.submit);
     Set_Id(res_json.id);
     Set_Gender(res_json.gender);
-    Set_Submit(res_json.submit);
     await Set_Data(res_json.data);
     await Set_Claims(res_json.claims);
 
