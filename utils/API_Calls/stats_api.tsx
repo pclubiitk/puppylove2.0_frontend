@@ -11,6 +11,7 @@ export const getStats = async () => {
     }
     const resJson = await res.json();
     return resJson;
+   
   } catch (err) {
     console.log(err);
     throw new Error('Error in Fetching Stats');
